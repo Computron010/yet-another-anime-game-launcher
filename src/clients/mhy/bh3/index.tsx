@@ -8,6 +8,7 @@ import { Server } from "@constants";
 import { Locale } from "@locale";
 import {
   assertValueDefined,
+  exec,
   getFreeSpace,
   getKey,
   getKeyOrDefault,
@@ -41,7 +42,16 @@ import {
   VoicePackNames,
 } from "../launcher-info";
 
-const CURRENT_SUPPORTED_VERSION = "7.2.0";
+const CURRENT_SUPPORTED_VERSION = "7.5.0";
+
+async function fetch(url: string) {
+  const { stdOut } = await exec(["curl", url]);
+  return {
+    async json() {
+      return JSON.parse(stdOut);
+    },
+  };
+}
 
 export async function createBH3ChannelClient({
   server,
@@ -63,7 +73,7 @@ export async function createBH3ChannelClient({
       server.adv_url +
         (server.id == "CN"
           ? `&language=zh-cn` // CN server has no other language support
-          : `&language=${locale.get("CONTENT_LANG_ID")}`)
+          : `&language=en-us`)
     )
   ).json();
   const {
